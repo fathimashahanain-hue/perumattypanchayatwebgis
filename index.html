@@ -1,0 +1,653 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perumatty Grama Panchayat | Interactive WebGIS</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root {
+    --green: #174f37;
+    --light-green: #eaf3e9;
+    --gold: #d6ad58;
+    --dark: #172b22;
+    --white: #ffffff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    color: #26372e;
+    background: #f8faf7;
+    line-height: 1.7;
+}
+
+header {
+    background: var(--green);
+    color: white;
+    padding: 16px 7%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 15px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 3px 15px #0002;
+}
+
+.logo {
+    font-size: 19px;
+    font-weight: 700;
+}
+
+.logo span {
+    display: block;
+    font-size: 11px;
+    font-weight: 300;
+    color: #dcebdc;
+}
+
+nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-size: 13px;
+    transition: .3s;
+}
+
+nav a:hover {
+    color: var(--gold);
+}
+
+.hero {
+    min-height: 570px;
+    background:
+    linear-gradient(90deg, rgba(12,40,26,.85), rgba(12,40,26,.25)),
+    url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1800&q=85')
+    center/cover;
+    display: flex;
+    align-items: center;
+    padding: 80px 9%;
+    color: white;
+}
+
+.hero-content {
+    max-width: 720px;
+}
+
+.hero h1 {
+    font-size: clamp(35px, 6vw, 65px);
+    line-height: 1.2;
+    margin: 15px 0;
+}
+
+.hero p {
+    font-size: 16px;
+    max-width: 600px;
+    color: #edf4ec;
+}
+
+.tag {
+    color: var(--gold);
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-size: 12px;
+}
+
+.btn {
+    display: inline-block;
+    margin-top: 25px;
+    background: var(--gold);
+    color: #172b22;
+    padding: 13px 27px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: .3s;
+}
+
+.btn:hover {
+    background: white;
+    transform: translateY(-3px);
+}
+
+section {
+    padding: 75px 8%;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.section-title h2 {
+    font-size: 31px;
+    color: var(--green);
+    margin-bottom: 10px;
+}
+
+.section-title p {
+    color: #718077;
+    font-size: 14px;
+}
+
+.about-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 40px;
+    align-items: center;
+}
+
+.about-image img {
+    width: 100%;
+    height: 360px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.about-text h3 {
+    color: var(--green);
+    font-size: 25px;
+    margin-bottom: 15px;
+}
+
+.about-text p {
+    margin-bottom: 15px;
+    font-size: 14px;
+    color: #59665d;
+}
+
+.stats {
+    background: var(--green);
+    color: white;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    padding: 45px 8%;
+    text-align: center;
+}
+
+.stat h2 {
+    color: var(--gold);
+    font-size: 34px;
+}
+
+.stat p {
+    font-size: 13px;
+}
+
+.geo-section {
+    background: var(--light-green);
+}
+
+.geo-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px;
+}
+
+.geo-card {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    border-left: 4px solid var(--gold);
+}
+
+.geo-card h3 {
+    color: var(--green);
+    margin-bottom: 10px;
+}
+
+.geo-card p {
+    color: #647168;
+    font-size: 14px;
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.gallery-item {
+    overflow: hidden;
+    border-radius: 10px;
+    background: white;
+    box-shadow: 0 5px 20px #0001;
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 230px;
+    object-fit: cover;
+    display: block;
+    transition: .4s;
+}
+
+.gallery-item:hover img {
+    transform: scale(1.06);
+}
+
+.gallery-item p {
+    padding: 13px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--green);
+}
+
+.webgis-section {
+    background: #edf3ed;
+}
+
+.webgis-intro {
+    max-width: 800px;
+    margin: auto;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.webgis-intro p {
+    font-size: 14px;
+    color: #647168;
+}
+
+.map-container {
+    width: 100%;
+    height: 680px;
+    border: 5px solid white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 30px #0002;
+    background: #ddd;
+}
+
+.map-container iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.map-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.map-link a {
+    color: var(--green);
+    font-weight: 600;
+}
+
+footer {
+    background: #102e20;
+    color: white;
+    padding: 50px 8% 20px;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 40px;
+    margin-bottom: 35px;
+}
+
+footer h3 {
+    color: var(--gold);
+    margin-bottom: 15px;
+}
+
+footer p, footer a {
+    font-size: 13px;
+    color: #d2dfd5;
+    text-decoration: none;
+}
+
+footer a:hover {
+    color: var(--gold);
+}
+
+.copyright {
+    text-align: center;
+    border-top: 1px solid #ffffff30;
+    padding-top: 20px;
+    font-size: 12px;
+    color: #bdcfc1;
+}
+
+@media(max-width: 768px) {
+    header {
+        justify-content: center;
+        text-align: center;
+    }
+
+    nav {
+        justify-content: center;
+        gap: 12px;
+    }
+
+    .hero {
+        min-height: 480px;
+        padding: 50px 7%;
+    }
+
+    .about-grid,
+    .geo-grid,
+    .footer-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .gallery-grid {
+        grid-template-columns: 1fr;
+    }
+
+    section {
+        padding: 55px 6%;
+    }
+
+    .map-container {
+        height: 550px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<header>
+    <div class="logo">
+        PERUMATTY
+        <span>GRAMA PANCHAYAT · PALAKKAD, KERALA</span>
+    </div>
+
+    <nav>
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#geography">Geography</a>
+        <a href="#gallery">Gallery</a>
+        <a href="#webgis">Interactive Map</a>
+        <a href="#contact">Contact</a>
+    </nav>
+</header>
+
+<!-- HERO SECTION -->
+<div class="hero" id="home">
+    <div class="hero-content">
+        <span class="tag">Discover · Explore · Understand</span>
+        <h1>Perumatty<br>Grama Panchayat</h1>
+        <p>
+            Exploring the geographical landscape, natural resources,
+            settlements and development of Perumatty through
+            Interactive WebGIS technology.
+        </p>
+        <a href="#webgis" class="btn">Explore Interactive Map →</a>
+    </div>
+</div>
+
+<!-- ABOUT SECTION -->
+<section id="about">
+    <div class="section-title">
+        <h2>About Perumatty</h2>
+        <p>A beautiful agricultural landscape in Palakkad district, Kerala</p>
+    </div>
+
+    <div class="about-grid">
+        <div class="about-text">
+            <h3>Introduction</h3>
+            <p>
+                Perumatty Grama Panchayat is situated in Chittur Block
+                of Palakkad district in Kerala, near the interstate
+                boundary with Tamil Nadu. It is an important rural
+                administrative region known for its agricultural
+                landscape and village settlements.
+            </p>
+            <p>
+                Agriculture plays an important role in the local
+                economy. Paddy cultivation, irrigation facilities,
+                rural roads, residential areas and natural resources
+                form important elements of the Panchayat's landscape.
+            </p>
+            <p>
+                This website presents the geographical characteristics
+                of Perumatty and provides an interactive WebGIS platform
+                to explore spatial information and understand the
+                Panchayat through digital mapping.
+            </p>
+        </div>
+
+        <div class="about-image">
+            <img
+            src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=1000&q=85"
+            alt="Green agricultural landscape">
+        </div>
+    </div>
+</section>
+
+<!-- STATISTICS -->
+<div class="stats">
+    <div class="stat">
+        <h2>60.79</h2>
+        <p>Area (Sq. Km)</p>
+    </div>
+
+    <div class="stat">
+        <h2>18</h2>
+        <p>Administrative Wards</p>
+    </div>
+
+    <div class="stat">
+        <h2>27,693</h2>
+        <p>Total Population</p>
+    </div>
+
+    <div class="stat">
+        <h2>454</h2>
+        <p>Population / Sq. Km</p>
+    </div>
+</div>
+
+<!-- GEOGRAPHICAL INFORMATION -->
+<section class="geo-section" id="geography">
+    <div class="section-title">
+        <h2>Geographical Information</h2>
+        <p>Understanding the spatial and physical characteristics</p>
+    </div>
+
+    <div class="geo-grid">
+
+        <div class="geo-card">
+            <h3>📍 Geographical Location</h3>
+            <p>
+                Perumatty is located in Palakkad district, Kerala,
+                within Chittur Block Panchayat. It lies close to
+                the Tamil Nadu border.
+            </p>
+        </div>
+
+        <div class="geo-card">
+            <h3>🌾 Physical Landscape</h3>
+            <p>
+                The region includes agricultural plains, paddy
+                fields, settlements and cultivated lands.
+                The landscape supports rural livelihoods and
+                agricultural activities.
+            </p>
+        </div>
+
+        <div class="geo-card">
+            <h3>💧 Water Resources</h3>
+            <p>
+                Irrigation canals, reservoirs, ponds and groundwater
+                resources are important components of the local
+                agricultural environment.
+            </p>
+        </div>
+
+        <div class="geo-card">
+            <h3>🌱 Land Use and Agriculture</h3>
+            <p>
+                Agriculture is an important land-use activity.
+                Paddy fields and other cultivated lands contribute
+                to the rural economy of the region.
+            </p>
+        </div>
+
+        <div class="geo-card">
+            <h3>🏘️ Settlement Pattern</h3>
+            <p>
+                The Panchayat consists of rural settlements,
+                residential areas, agricultural properties,
+                local roads and community facilities.
+            </p>
+        </div>
+
+        <div class="geo-card">
+            <h3>🏛️ Administrative Details</h3>
+            <p>
+                District: Palakkad<br>
+                Block: Chittur<br>
+                Panchayat: Perumatty<br>
+                Number of wards: 18
+            </p>
+        </div>
+
+    </div>
+</section>
+
+<!-- PHOTO GALLERY -->
+<section id="gallery">
+    <div class="section-title">
+        <h2>Photo Gallery</h2>
+        <p>Landscapes and rural environment of the region</p>
+    </div>
+
+    <div class="gallery-grid">
+
+        <div class="gallery-item">
+            <img
+            src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=900&q=85"
+            alt="Agricultural fields">
+            <p>Agricultural Landscape</p>
+        </div>
+
+        <div class="gallery-item">
+            <img
+            src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=85"
+            alt="Natural landscape">
+            <p>Natural Environment</p>
+        </div>
+
+        <div class="gallery-item">
+            <img
+            src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&fit=crop&w=900&q=85"
+            alt="Green countryside">
+            <p>Rural Landscape</p>
+        </div>
+
+    </div>
+
+    <p style="text-align:center;font-size:11px;color:#829087;margin-top:20px;">
+        Note: Gallery images are illustrative landscape photographs,
+        not verified photographs of specific locations in Perumatty.
+        Replace them with actual Panchayat photographs for the final version.
+    </p>
+</section>
+
+<!-- INTERACTIVE WEBGIS -->
+<section class="webgis-section" id="webgis">
+
+    <div class="section-title">
+        <h2>Interactive WebGIS Platform</h2>
+        <p>Explore Perumatty through digital geographical mapping</p>
+    </div>
+
+    <div class="webgis-intro">
+        <p>
+            The Interactive WebGIS platform provides a digital
+            environment for exploring the geographical features
+            of Perumatty Grama Panchayat. Users can interact with
+            the map and explore available spatial layers and
+            geographical information.
+        </p>
+    </div>
+
+    <div class="map-container">
+        <iframe
+            src="https://fathimashahanain-hue.github.io/Perumattywebgis/"
+            title="Perumatty Grama Panchayat Interactive WebGIS Map"
+            loading="lazy"
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <div class="map-link">
+        <p>
+            Having trouble viewing the map?
+            <a href="https://fathimashahanain-hue.github.io/Perumattywebgis/"
+            target="_blank" rel="noopener">
+                Open Interactive WebGIS in a new tab →
+            </a>
+        </p>
+    </div>
+
+</section>
+
+<!-- FOOTER -->
+<footer id="contact">
+
+    <div class="footer-grid">
+
+        <div>
+            <h3>Perumatty Grama Panchayat</h3>
+            <p>
+                A digital geographical information platform
+                developed to explore the spatial characteristics,
+                natural resources and settlements of Perumatty
+                Grama Panchayat, Palakkad, Kerala.
+            </p>
+        </div>
+
+        <div>
+            <h3>Contact Information</h3>
+
+            <p>👤 Name: Fathima Shahana</p>
+
+            <p>
+                ✉ Email:
+                <a href="mailto:fathimashahana.in@gmail.com">
+                    fathimashahana.in@gmail.com
+                </a>
+            </p>
+        </div>
+
+    </div>
+
+    <div class="copyright">
+        © 2026 Perumatty Grama Panchayat WebGIS Project.
+        Designed and developed by Fathima Shahana.
+    </div>
+
+</footer>
+
+</body>
+</html>
